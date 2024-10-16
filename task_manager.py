@@ -1,116 +1,99 @@
 import json
 import os
 
-
-# Task class
+# class for a single task with an id, title, and completion status
 class Task:
     def __init__(self, id, title, completed=False):
-        self.id = id
-        self.title = title
-        self.completed = completed
+        self.id = id  # unique identifier for the task
+        self.title = title  # title for the  task
+        self.completed = completed # status indicating whether the task is complete or not
 
     def __repr__(self):
-        status = "✓" if self.completed else "✗"
+        # string representation of the task for display, showing completed status
+        status = "✓" if self.completed else "✗"  # mark as completed or not
         return f"{self.id}. {self.title} [{status}]"
 
-
-# Task Manager functions
-tasks = []
-task_file = "tasks.json"
-next_task_id = 1
-
+# global task list and file
+tasks = []  # list to store all task
+task_file = "tasks.json"  # JSON file
+next_task_id = 1  # to assign next task id
 
 def add_task(title):
-    """Adds a new task to the list."""
+    # adding a new task with the provided task title
     global next_task_id
-    tasks.append(Task(next_task_id, title))
-    next_task_id += 1
-    print(f"Task '{title}' added.")
-
+    tasks.append(Task(next_task_id, title))  # add new task to the list
+    next_task_id += 1  # increase the task id for next task
 
 def view_tasks():
-    """Displays all tasks, or notifies if there are no tasks."""
+    # display all tasks or notify if no tasks exist
     if tasks:
         for task in tasks:
-            print(task)
+            print(task)  # print each task
     else:
-        print("No tasks available.")
-
+        print("No tasks available.") # notify if there no tasks
 
 def delete_task(task_id):
-    """Deletes a task by ID."""
+    # remove a task by its id
     global tasks
-    tasks = [task for task in tasks if task.id != task_id]
-    print(f"Task {task_id} deleted.") if tasks else print(f"Task {task_id} not found.")
-
+    tasks = [task for task in tasks if task.id != task_id]  # keep tasks that don't match the id
 
 def complete_task(task_id):
-    """Marks a task as complete by ID."""
+    # mark a task as complete by its id
     for task in tasks:
         if task.id == task_id:
-            task.completed = True
-            print(f"Task {task_id} marked as complete.")
+            task.completed = True  # update task status as completed
             return
-    print(f"Task {task_id} not found.")
-
+    print(f"Task {task_id} not found.")# notify if the task id does not exists
 
 def save_tasks():
-    """Saves tasks to a JSON file."""
+    # save all tasks to a JSON file
     with open(task_file, 'w') as f:
-        json.dump([task.__dict__ for task in tasks], f)
-    print("Tasks saved to file.")
+        json.dump([task.__dict__ for task in tasks], f)  # save tasks as dictionaries and write to the JSON file
 
 
 def load_tasks():
-    """Loads tasks from a JSON file, if available."""
+    # load tasks from a JSON file if it exists
     global tasks, next_task_id
-    if os.path.exists(task_file):
+    if os.path.exists(task_file): # check is the task file exists
         with open(task_file, 'r') as f:
-            tasks = [Task(**t) for t in json.load(f)]
-        next_task_id = max([task.id for task in tasks], default=0) + 1
-        print("Tasks loaded from file.")
-    else:
-        print("No saved tasks found.")
+            tasks = [Task(**t) for t in json.load(f)]  # recreate task objects from JSON
+        next_task_id = max([task.id for task in tasks], default=0) + 1  # set next task id
 
-
-# Enhanced CLI to handle both words and numbers
 def cli():
-    """Command-Line Interface to interact with the task manager."""
-    load_tasks()
+    # command-line interface for interacting with tasks
+    load_tasks()  # load tasks from the file at startup
 
     while True:
         print("\n1: Add | 2: View | 3: Delete | 4: Complete | 5: Save | 6: Exit")
-        cmd = input("> ").strip().lower()
+        cmd = input("Enter your Task: ").strip().lower()# get user input for the command
 
         if cmd in ["1", "add"]:
-            task_title = input("Enter task title: ").strip()
+            task_title = input("Enter task title: ").strip() # prompt for task title
             if task_title:
-                add_task(task_title)
+                add_task(task_title)  # add task if title is provided
             else:
-                print("Task title cannot be empty.")
+                print("Task title cannot be empty.") # notify if title is empty
         elif cmd in ["2", "view"]:
-            view_tasks()
+            view_tasks()  # display all tasks
         elif cmd in ["3", "delete"]:
             try:
-                task_id = int(input("Enter task ID to delete: ").strip())
-                delete_task(task_id)
+                task_id = int(input("Enter task ID to delete: ").strip()) # get task id
+                delete_task(task_id)  # delete the task by provided id
             except ValueError:
-                print("Invalid input. Please enter a valid task ID.")
+                print("Invalid input. Please enter a valid task ID.") # notify is input is invalid
         elif cmd in ["4", "complete"]:
             try:
-                task_id = int(input("Enter task ID to complete: ").strip())
-                complete_task(task_id)
+                task_id = int(input("Enter task ID to complete: ").strip()) # get task id
+                complete_task(task_id) # marks the task as completed
             except ValueError:
-                print("Invalid input. Please enter a valid task ID.")
+                print("Invalid input. Please enter a valid task ID.") # notify is input is invalid
         elif cmd in ["5", "save"]:
-            save_tasks()
+            save_tasks()  # save tasks to file
         elif cmd in ["6", "exit"]:
-            save_tasks()
-            print("Goodbye!")
-            break
+            save_tasks()  # save and exit
+            break # exit the loop
         else:
-            print("Invalid choice. Please select a valid option.")
-
+            print("Invalid choice. Please select a valid option.") # notify the choice is invalid
 
 if __name__ == "__main__":
-    cli()
+    cli()  # run the task manager
