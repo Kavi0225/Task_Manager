@@ -17,5 +17,5 @@ python 3
 
 ## Installation
 To work with this project, clone the repository using this URL.
-repository URL : git clone https://github.com/yourusername/task_manager.git
+repository URL : https://github.com/Kavi0225/Task_manager.git
 
